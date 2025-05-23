@@ -2,99 +2,74 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-950 text-white flex flex-col items-center justify-between p-0">
+      {/* Header with logo placeholder */}
+      <header className="w-full flex justify-center py-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+            <span className="text-2xl font-bold">HS</span>
+          </div>
+          <span className="text-2xl font-semibold tracking-wide">HireSight</span>
         </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-8">
+        <div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            AI-Powered Interview Assistant
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
+            Let HireSight join your Zoom interviews, ask smart questions, and deliver instant hiring reports with insights, red flags, and recommendations—before the call ends.
+          </p>
+        </div>
+        <form className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md mx-auto mt-6">
+          <input
+            type="email"
+            placeholder="Enter your email for early access"
+            className="px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors w-full sm:w-auto"
+          >
+            Get Early Access
+          </button>
+        </form>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Features Section */}
+      <section className="w-full max-w-4xl mx-auto py-12 px-4 grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="bg-gray-900/60 rounded-xl p-6 flex flex-col items-center shadow-md">
+          <span className="text-3xl mb-2">🤖</span>
+          <h3 className="font-bold text-lg mb-1">AI Interviewer</h3>
+          <p className="text-gray-400 text-sm">Joins Zoom calls, asks relevant questions, and adapts in real time.</p>
+        </div>
+        <div className="bg-gray-900/60 rounded-xl p-6 flex flex-col items-center shadow-md">
+          <span className="text-3xl mb-2">⚡</span>
+          <h3 className="font-bold text-lg mb-1">Instant Reports</h3>
+          <p className="text-gray-400 text-sm">Generates actionable hiring reports before the interview ends.</p>
+        </div>
+        <div className="bg-gray-900/60 rounded-xl p-6 flex flex-col items-center shadow-md">
+          <span className="text-3xl mb-2">🔗</span>
+          <h3 className="font-bold text-lg mb-1">Seamless Zoom Integration</h3>
+          <p className="text-gray-400 text-sm">Easy setup with your existing Zoom workflow.</p>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section className="w-full max-w-3xl mx-auto py-8 px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">How it Works</h2>
+        <ol className="list-decimal list-inside space-y-4 text-gray-300">
+          <li><span className="font-semibold text-white">Connect:</span> Link your Zoom account and schedule interviews as usual.</li>
+          <li><span className="font-semibold text-white">AI Joins:</span> HireSight joins the call, asks questions, and listens in real time.</li>
+          <li><span className="font-semibold text-white">Get Report:</span> Receive a detailed hiring report before the call ends.</li>
+        </ol>
+      </section>
+
+      {/* Footer */}
+      <footer className="w-full text-center py-6 text-gray-500 text-sm border-t border-gray-800">
+        &copy; {new Date().getFullYear()} HireSight. All rights reserved.
       </footer>
     </div>
   );
