@@ -34,33 +34,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!user || interviewSession.userId !== user.id) {
       return res.status(403).json({ error: "Forbidden" });
     }
-    // Delete file from Supabase Storage
+    // Generate signed URL for download
     if (interviewSession.fileUrl) {
       try {
         const url = new URL(interviewSession.fileUrl);
-        const encodedPath = url.pathname.split('/uploads/')[1];
-        const path = decodeURIComponent(encodedPath);
-        console.log('Attempting to delete path:', path);
+        const path = url.pathname.split('/object/public/uploads/')[1];
         if (!path) {
           return res.status(400).json({ error: "Could not extract file path from URL." });
         }
-        const { error: storageError } = await supabase.storage.from('uploads').remove([path]);
-        if (storageError) {
-          console.error('Supabase delete error:', storageError);
-          return res.status(500).json({ error: "Failed to delete file from storage", details: storageError });
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage.from('uploads').createSignedUrl(path, 60);
+        if (signedUrlError) {
+          return res.status(500).json({ error: "Failed to generate signed URL: " + signedUrlError.message });
         }
+        return res.status(200).json({ success: true, signedUrl: signedUrlData?.signedUrl });
       } catch (e) {
-        console.error('Delete file error:', e);
         return res.status(400).json({ error: "Invalid fileUrl format." });
       }
     }
-    // Delete DB record
-    await prisma.interviewSession.delete({ where: { id } });
-    return res.status(200).json({ success: true });
+    return res.status(400).json({ error: "No fileUrl found for this session." });
   } catch (error: unknown) {
-    console.log("ERROR:", error);
     const err = error as Error;
-    console.error("Delete error:", err);
-    return res.status(500).json({ error: err.message || "Delete failed." });
+    console.error("Download error:", err);
+    return res.status(500).json({ error: err.message || "Download failed." });
   }
 } 

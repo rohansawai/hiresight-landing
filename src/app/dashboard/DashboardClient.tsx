@@ -35,6 +35,7 @@ export default function DashboardClient() {
     fetch("/api/interviews")
       .then((res) => res.json())
       .then((data) => setSessions(data.sessions || []));
+      console.log("SESSIONS:", sessions);
   }, [success, deletingId, transcribingId]);
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -43,6 +44,12 @@ export default function DashboardClient() {
     setSuccess("");
     setLoading(true);
     setProgress(0);
+
+      // 👇 ADD THIS BUCKET LIST CHECK
+  const { data: bucketList, error: bucketError } = await supabase.storage.listBuckets();
+  console.log("Available Buckets:", bucketList);
+  console.log("Bucket List Error:", bucketError);
+
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
       setError("Please select a file.");

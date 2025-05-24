@@ -5,8 +5,12 @@ import { PrismaClient } from '@prisma/client';
 import { transcribeWithDeepgram } from '../../../../lib/transcription';
 import path from 'path';
 import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 
 const prisma = new PrismaClient();
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Add diarization word type
 interface DiarizationWord {
