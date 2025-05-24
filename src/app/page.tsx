@@ -2,10 +2,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleEarlyAccess = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSubmitted(false);
+    const res = await fetch("/api/early-access", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setSubmitted(true);
+      setEmail("");
+    } else {
+      setError(data.error || "Something went wrong.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 text-white flex flex-col items-center">
@@ -52,11 +74,14 @@ export default function Home() {
           </h1>
           {/* Get Early Access form for unauthenticated users (top of card) */}
           {status === "unauthenticated" && (
-            <form className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md mx-auto mt-2 mb-4">
+            <form onSubmit={handleEarlyAccess} className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md mx-auto mt-2 mb-4">
               <input
                 type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="Enter your email for early access"
                 className="px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                required
               />
               <button
                 type="submit"
@@ -64,6 +89,13 @@ export default function Home() {
               >
                 Get Early Access
               </button>
+              {submitted && !error && <div className="text-green-400 mt-2">Thank you! We'll be in touch soon.</div>}
+              {error && error === 'Already registered' && (
+                <div className="text-yellow-400 mt-2">This email is already registered for early access.</div>
+              )}
+              {error && error !== 'Already registered' && (
+                <div className="text-red-400 mt-2">{error}</div>
+              )}
             </form>
           )}
           <p className="text-lg text-center text-gray-300">
