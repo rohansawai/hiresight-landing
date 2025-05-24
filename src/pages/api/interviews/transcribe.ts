@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       where: { id },
       data: {
         transcript,
-        diarization,
+        diarization: JSON.stringify(diarization),
         status: "transcribed",
       },
     });

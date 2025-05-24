@@ -1,8 +1,18 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import type { InterviewSession } from "../../generated/prisma/index";
+import type { DiarizationWord } from "../../lib/transcription";
+
+type DashboardInterviewSession = InterviewSession & {
+  transcript?: string | null;
+  diarization?: unknown;
+  roles?: Record<string, string> | null;
+  report?: string | null;
+  verdict?: string | null;
+};
 
 export default function DashboardClient() {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<DashboardInterviewSession[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -137,24 +147,24 @@ export default function DashboardClient() {
     setAnalyzingId(null);
   };
 
-  function groupDiarization(words: any[]) {
+  function groupDiarization(words: DiarizationWord[]) {
     if (!Array.isArray(words)) return [];
     const result = [];
     let currentSpeaker = null;
-    let currentWords = [];
-    for (const w of words) {
-      if (w.speaker !== currentSpeaker) {
-        if (currentWords.length) {
-          result.push({ speaker: currentSpeaker, text: currentWords.join(' ') });
+    let currentWords: DiarizationWord[] = [];
+    for (const word of words) {
+      if (word.speaker !== currentSpeaker) {
+        if (currentWords.length > 0) {
+          result.push({ speaker: currentSpeaker, words: currentWords });
         }
-        currentSpeaker = w.speaker;
-        currentWords = [w.punctuated_word || w.word];
+        currentSpeaker = word.speaker;
+        currentWords = [word];
       } else {
-        currentWords.push(w.punctuated_word || w.word);
+        currentWords.push(word);
       }
     }
-    if (currentWords.length) {
-      result.push({ speaker: currentSpeaker, text: currentWords.join(' ') });
+    if (currentWords.length > 0) {
+      result.push({ speaker: currentSpeaker, words: currentWords });
     }
     return result;
   }
@@ -218,7 +228,7 @@ export default function DashboardClient() {
                       )}
                     </div>
                     {/* Speakers Card */}
-                    {s.diarization && Array.isArray(s.diarization) && (
+                    {Array.isArray(s.diarization) && (
                       <div className="bg-gray-900 rounded p-3 text-left">
                         <button
                           className="w-full flex justify-between items-center font-semibold mb-1 text-left text-white bg-green-600 px-3 py-2 rounded hover:bg-green-700 transition-colors shadow"
@@ -234,11 +244,11 @@ export default function DashboardClient() {
                         </button>
                         {openSpeakers[s.id] !== false && (
                           <ul className="text-xs text-gray-400 mt-2">
-                            {groupDiarization(s.diarization).map((seg, idx) => (
+                            {groupDiarization(s.diarization as DiarizationWord[]).map((seg, idx) => (
                               <li key={idx}>
                                 <span className="font-bold">
                                   {s.roles && s.roles[`Speaker ${seg.speaker}`] ? s.roles[`Speaker ${seg.speaker}`] : `Speaker ${seg.speaker}`}:
-                                </span> {seg.text}
+                                </span> {seg.words.map(w => w.punctuated_word || w.word).join(' ')}
                               </li>
                             ))}
                           </ul>

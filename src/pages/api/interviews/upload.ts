@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
   try {
-    const session = await getServerSession(req, res, authOptions as any) as Session;
+    const session = await getServerSession(req, res, authOptions) as Session;
     if (!session || !session.user?.email) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     return res.status(200).json({ success: true, session: interviewSession });
-  } catch (error) {
+  } catch (error: unknown) {
     const err = error as Error;
     console.error("Upload error:", err);
     return res.status(500).json({ error: err.message || "Upload failed." });

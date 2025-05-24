@@ -1,7 +1,14 @@
 import fs from "fs";
 import axios from "axios";
 
-export async function transcribeWithDeepgram(filePath: string): Promise<{ transcript: string; diarization: any }> {
+export interface DiarizationWord {
+  word: string;
+  speaker: number;
+  punctuated_word?: string;
+  [key: string]: unknown;
+}
+
+export async function transcribeWithDeepgram(filePath: string): Promise<{ transcript: string; diarization: DiarizationWord[] }> {
   const apiKey = process.env.DEEPGRAM_API_KEY;
   if (!apiKey) throw new Error("Missing Deepgram API key");
   if (!fs.existsSync(filePath)) throw new Error("File not found");

@@ -13,7 +13,7 @@ interface DiarizationWord {
   word: string;
   speaker: number;
   punctuated_word?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export async function POST(req: NextRequest) {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       const { transcript, diarization } = await transcribeWithDeepgram(filePath);
       await prisma.interviewSession.update({
         where: { id },
-        data: { transcript, diarization, status: 'transcribed' },
+        data: { transcript, diarization: JSON.stringify(diarization), status: 'transcribed' },
       });
       updatedSession = await prisma.interviewSession.findUnique({ where: { id } });
     } catch (err) {
