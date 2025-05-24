@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       const diarization = Array.isArray(updatedSession.diarization) ? updatedSession.diarization : [];
       const turns = [];
       let lastSpeaker = null;
-      let currentTurn = [];
+      let currentTurn: string[] = [];
       for (const word of diarization) {
         if (word.speaker !== lastSpeaker) {
           if (currentTurn.length) turns.push({ speaker: lastSpeaker, text: currentTurn.join(' ') });
