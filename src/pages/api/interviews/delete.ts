@@ -39,8 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Delete DB record
     await prisma.interviewSession.delete({ where: { id } });
     return res.status(200).json({ success: true });
-  } catch (error: any) {
-    console.error("Delete error:", error);
-    return res.status(500).json({ error: error.message || "Delete failed." });
+  } catch (error) {
+    const err = error as Error;
+    console.error("Delete error:", err);
+    return res.status(500).json({ error: err.message || "Delete failed." });
   }
 } 

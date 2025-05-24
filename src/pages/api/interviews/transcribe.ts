@@ -32,8 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
     return res.status(200).json({ success: true, transcript, diarization });
-  } catch (error: any) {
-    console.error("Transcription error:", error);
-    return res.status(500).json({ error: error.message || "Transcription failed." });
+  } catch (error) {
+    const err = error as Error;
+    console.error("Transcribe error:", err);
+    return res.status(500).json({ error: err.message || "Transcribe failed." });
   }
 } 

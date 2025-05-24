@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const data = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
-      form.parse(req, (err: any, fields: Fields, files: Files) => {
+      form.parse(req, (err: Error | null, fields: Fields, files: Files) => {
         if (err) reject(err);
         else resolve({ fields, files });
       });
@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Upload to Supabase Storage
     const fileBuffer = fs.readFileSync(file.filepath);
     const filename = `${Date.now()}-${file.originalFilename}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('uploads')
       .upload(filename, fileBuffer, {
         contentType: file.mimetype || undefined,
@@ -80,8 +80,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     return res.status(200).json({ success: true, session: interviewSession });
-  } catch (error: any) {
-    console.error("Upload error:", error);
-    return res.status(500).json({ error: error.message || "Upload failed." });
+  } catch (error) {
+    const err = error as Error;
+    console.error("Upload error:", err);
+    return res.status(500).json({ error: err.message || "Upload failed." });
   }
 } 
