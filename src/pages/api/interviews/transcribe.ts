@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import path from "path";
 import { transcribeWithDeepgram } from "../../../lib/transcription";
 
 const prisma = new PrismaClient();
@@ -19,10 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ error: "Session not found" });
   }
 
-  const filePath = path.join(process.cwd(), "public", session.fileUrl);
+  // Use the Supabase Storage public URL directly
+  const fileUrl = session.fileUrl;
 
   try {
-    const { transcript, diarization } = await transcribeWithDeepgram(filePath);
+    const { transcript, diarization } = await transcribeWithDeepgram(fileUrl);
     await prisma.interviewSession.update({
       where: { id },
       data: {

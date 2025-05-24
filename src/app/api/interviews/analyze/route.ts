@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
   // Step 1: Transcription
   let updatedSession = await prisma.interviewSession.findUnique({ where: { id } });
   if (!updatedSession?.transcript) {
-    const filePath = path.join(process.cwd(), 'public', interview.fileUrl);
+    const fileUrl = interview.fileUrl;
     try {
-      const { transcript, diarization } = await transcribeWithDeepgram(filePath);
+      const { transcript, diarization } = await transcribeWithDeepgram(fileUrl);
       await prisma.interviewSession.update({
         where: { id },
         data: { transcript, diarization: JSON.stringify(diarization), status: 'transcribed' },

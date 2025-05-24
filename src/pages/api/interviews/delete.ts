@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../app/api/auth/[...nextauth]/authOptions";
-import fs from "fs";
-import path from "path";
 import { PrismaClient } from "@prisma/client";
+import { createClient } from '@supabase/supabase-js';
 import type { Session } from "next-auth";
 
 const prisma = new PrismaClient();
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -31,10 +34,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!user || interviewSession.userId !== user.id) {
       return res.status(403).json({ error: "Forbidden" });
     }
-    // Delete file from disk
-    const filePath = path.join(process.cwd(), "public", interviewSession.fileUrl);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    // Delete file from Supabase Storage
+    if (interviewSession.fileUrl) {
+      // Extract the file path from the public URL
+      const urlParts = interviewSession.fileUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      const { error: storageError } = await supabase.storage.from('uploads').remove([fileName]);
+      if (storageError) {
+        return res.status(500).json({ error: "Failed to delete file from storage: " + storageError.message });
+      }
     }
     // Delete DB record
     await prisma.interviewSession.delete({ where: { id } });
