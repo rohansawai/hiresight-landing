@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../app/api/auth/[...nextauth]/route";
+import { authOptions } from "../../../app/api/auth/[...nextauth]/authOptions";
 import { IncomingForm, Fields, Files, File } from "formidable";
 import fs from "fs";
 import path from "path";
