@@ -1,7 +1,12 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { createClient } from '@supabase/supabase-js';
 import type { InterviewSession } from "../../generated/prisma/index";
 import type { DiarizationWord } from "../../lib/transcription";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type DashboardInterviewSession = InterviewSession & {
   transcript?: string | null;
@@ -44,38 +49,36 @@ export default function DashboardClient() {
       setLoading(false);
       return;
     }
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Use XMLHttpRequest for progress
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/interviews/upload", true);
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        setProgress(Math.round((event.loaded / event.total) * 100));
-      }
-    };
-    xhr.onload = () => {
+    const filename = `${Date.now()}-${file.name}`;
+    // Direct upload to Supabase Storage
+    const { data, error: uploadError } = await supabase.storage
+      .from('uploads')
+      .upload(filename, file, {
+        upsert: true,
+      });
+    if (uploadError) {
+      setError("Upload failed: " + uploadError.message);
       setLoading(false);
-      setProgress(0);
-      if (xhr.status === 200) {
-        const data = JSON.parse(xhr.responseText);
-        if (data.success) {
-          setSuccess("File uploaded successfully!");
-          fileInputRef.current!.value = "";
-        } else {
-          setError(data.error || "Upload failed.");
-        }
-      } else {
-        setError("Upload failed.");
-      }
-    };
-    xhr.onerror = () => {
-      setLoading(false);
-      setProgress(0);
-      setError("Upload failed.");
-    };
-    xhr.send(formData);
+      return;
+    }
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(filename);
+    const publicUrl = publicUrlData.publicUrl;
+    // Register the session in the backend
+    const res = await fetch("/api/interviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileUrl: publicUrl }),
+    });
+    const result = await res.json();
+    setLoading(false);
+    setProgress(0);
+    if (res.ok && result.success) {
+      setSuccess("File uploaded successfully!");
+      fileInputRef.current!.value = "";
+    } else {
+      setError(result.error || "Upload failed.");
+    }
   };
 
   const handleDelete = async (id: string) => {
