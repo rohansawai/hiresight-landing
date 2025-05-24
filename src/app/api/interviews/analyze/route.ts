@@ -8,6 +8,14 @@ import OpenAI from 'openai';
 
 const prisma = new PrismaClient();
 
+// Add diarization word type
+interface DiarizationWord {
+  word: string;
+  speaker: number;
+  punctuated_word?: string;
+  [key: string]: any;
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
@@ -47,12 +55,14 @@ export async function POST(req: NextRequest) {
   // Step 2: Assign Roles (LLM)
   if (!updatedSession?.roles && updatedSession?.transcript && updatedSession?.diarization) {
     try {
-      const diarization = Array.isArray(updatedSession.diarization) ? updatedSession.diarization : [];
-      const turns = [];
-      let lastSpeaker = null;
+      const diarization: DiarizationWord[] = Array.isArray(updatedSession.diarization)
+        ? (updatedSession.diarization as DiarizationWord[])
+        : [];
+      const turns: { speaker: number | null, text: string }[] = [];
+      let lastSpeaker: number | null = null;
       let currentTurn: string[] = [];
       for (const word of diarization) {
-        if (!word) continue;
+        if (!word || typeof word !== 'object' || typeof word.speaker !== 'number') continue;
         if (word.speaker !== lastSpeaker) {
           if (currentTurn.length) turns.push({ speaker: lastSpeaker, text: currentTurn.join(' ') });
           lastSpeaker = word.speaker;
