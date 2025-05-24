@@ -213,7 +213,7 @@ export default function DashboardClient() {
         <ul className="space-y-4">
           {sessions.map((s) => (
             <li key={s.id} className="bg-gray-800 rounded p-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-              <div className="flex-1">
+              <div className="flex-1" style={{ overflowWrap: 'anywhere' }}>
                 <div className="font-semibold">{s.fileUrl.split("/").pop()}</div>
                 <div className="text-gray-400 text-sm">Uploaded: {new Date(s.createdAt).toLocaleString()}</div>
                 <div className="text-gray-400 text-sm">Status: {s.status}</div>
@@ -238,33 +238,47 @@ export default function DashboardClient() {
                       )}
                     </div>
                     {/* Speakers Card */}
-                    {Array.isArray(s.diarization) && (
-                      <div className="bg-gray-900 rounded p-3 text-left">
-                        <button
-                          className="w-full flex justify-between items-center font-semibold mb-1 text-left text-white bg-green-600 px-3 py-2 rounded hover:bg-green-700 transition-colors shadow"
-                          onClick={() => setOpenSpeakers((prev) => ({...prev, [s.id]: !prev[s.id]}))}
-                          type="button"
-                        >
-                          <span className="flex items-center gap-2">
-                            {/* Users/Speaker Icon (SVG) */}
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75" /></svg>
-                            Speakers
-                          </span>
-                          <span className="ml-2">{openSpeakers[s.id] !== false ? '▲' : '▼'}</span>
-                        </button>
-                        {openSpeakers[s.id] !== false && (
-                          <ul className="text-xs text-gray-400 mt-2">
-                            {groupDiarization(s.diarization as DiarizationWord[]).map((seg, idx) => (
-                              <li key={idx}>
-                                <span className="font-bold">
-                                  {s.roles && s.roles[`Speaker ${seg.speaker}`] ? s.roles[`Speaker ${seg.speaker}`] : `Speaker ${seg.speaker}`}:
-                                </span> {seg.words.map(w => w.punctuated_word || w.word).join(' ')}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
+                    {(() => {
+                      let diarizationArr: DiarizationWord[] | null = null;
+                      if (s.diarization) {
+                        if (typeof s.diarization === 'string') {
+                          try {
+                            diarizationArr = JSON.parse(s.diarization);
+                          } catch {
+                            diarizationArr = null;
+                          }
+                        } else if (Array.isArray(s.diarization)) {
+                          diarizationArr = s.diarization;
+                        }
+                      }
+                      return diarizationArr && Array.isArray(diarizationArr) ? (
+                        <div className="bg-gray-900 rounded p-3 text-left">
+                          <button
+                            className="w-full flex justify-between items-center font-semibold mb-1 text-left text-white bg-green-600 px-3 py-2 rounded hover:bg-green-700 transition-colors shadow"
+                            onClick={() => setOpenSpeakers((prev) => ({...prev, [s.id]: !prev[s.id]}))}
+                            type="button"
+                          >
+                            <span className="flex items-center gap-2">
+                              {/* Users/Speaker Icon (SVG) */}
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75" /></svg>
+                              Speakers
+                            </span>
+                            <span className="ml-2">{openSpeakers[s.id] !== false ? '▲' : '▼'}</span>
+                          </button>
+                          {openSpeakers[s.id] !== false && (
+                            <ul className="text-xs text-gray-400 mt-2">
+                              {groupDiarization(diarizationArr).map((seg, idx) => (
+                                <li key={idx}>
+                                  <span className="font-bold">
+                                    {s.roles && s.roles[`Speaker ${seg.speaker}`] ? s.roles[`Speaker ${seg.speaker}`] : `Speaker ${seg.speaker}`}:
+                                  </span> {seg.words.map(w => w.punctuated_word || w.word).join(' ')}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ) : null;
+                    })()}
                     {s.report && (
                       <div className="mt-2 bg-gray-900 rounded p-3 text-left border border-purple-700">
                         <div className="font-semibold mb-1 text-purple-300">AI-Generated Report:</div>
