@@ -36,12 +36,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     // Delete file from Supabase Storage
     if (interviewSession.fileUrl) {
-      // Extract the file path from the public URL
-      const urlParts = interviewSession.fileUrl.split('/');
-      const fileName = urlParts[urlParts.length - 1];
-      const { error: storageError } = await supabase.storage.from('uploads').remove([fileName]);
-      if (storageError) {
-        return res.status(500).json({ error: "Failed to delete file from storage: " + storageError.message });
+      // Robustly extract the storage path from the public URL
+      try {
+        const url = new URL(interviewSession.fileUrl);
+        const path = url.pathname.split('/object/public/uploads/')[1]; // Handles subfolders too
+        if (!path) {
+          return res.status(400).json({ error: "Could not extract file path from URL." });
+        }
+        const { error: storageError } = await supabase.storage.from('uploads').remove([path]);
+        if (storageError) {
+          return res.status(500).json({ error: "Failed to delete file from storage: " + storageError.message });
+        }
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid fileUrl format." });
       }
     }
     // Delete DB record
