@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  sessions  InterviewSession[]
+}
+
+model InterviewSession {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  fileUrl   String
+  status    String   @default("uploaded")
+  transcript String?
+  diarization Json?
+  roles       Json?    // NEW: Speaker role mapping
+  analysis    Json?    // NEW: Q&A, sentiment, etc.
+  report      String?  // NEW: AI-generated report/summary
+  verdict     String?  // NEW: Final verdict/decision
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

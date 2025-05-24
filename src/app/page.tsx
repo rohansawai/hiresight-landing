@@ -1,15 +1,47 @@
+"use client";
 import Image from "next/image";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-950 text-white flex flex-col items-center justify-between p-0">
-      {/* Header with logo placeholder */}
-      <header className="w-full flex justify-center py-8">
+      {/* Header with logo placeholder, dashboard link, and login/register or logout button */}
+      <header className="w-full flex justify-between items-center py-8 px-8">
         <div className="flex items-center gap-4">
           <div className="bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
             <span className="text-2xl font-bold">HS</span>
           </div>
           <span className="text-2xl font-semibold tracking-wide">HireSight</span>
+        </div>
+        <div className="flex items-center gap-4">
+          {isLoggedIn && (
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-base font-semibold transition-colors"
+            >
+              Dashboard
+            </Link>
+          )}
+          {status === "unauthenticated" ? (
+            <a
+              href="/api/auth/signin"
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors text-white text-base"
+            >
+              Login / Register
+            </a>
+          ) : null}
+          {status === "authenticated" ? (
+            <button
+              onClick={() => signOut()}
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-red-600 font-semibold shadow-lg hover:from-pink-600 hover:to-red-700 transition-colors text-white text-base"
+            >
+              Logout
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -23,19 +55,21 @@ export default function Home() {
             Let HireSight join your Zoom interviews, ask smart questions, and deliver instant hiring reports with insights, red flags, and recommendations—before the call ends.
           </p>
         </div>
-        <form className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md mx-auto mt-6">
-          <input
-            type="email"
-            placeholder="Enter your email for early access"
-            className="px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-          />
-          <button
-            type="submit"
-            className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors w-full sm:w-auto"
-          >
-            Get Early Access
-          </button>
-        </form>
+        {status === "unauthenticated" && (
+          <form className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md mx-auto mt-6">
+            <input
+              type="email"
+              placeholder="Enter your email for early access"
+              className="px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            />
+            <button
+              type="submit"
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors w-full sm:w-auto"
+            >
+              Get Early Access
+            </button>
+          </form>
+        )}
       </main>
 
       {/* Features Section */}
