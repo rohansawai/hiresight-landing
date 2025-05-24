@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       let lastSpeaker = null;
       let currentTurn: string[] = [];
       for (const word of diarization) {
+        if (!word) continue;
         if (word.speaker !== lastSpeaker) {
           if (currentTurn.length) turns.push({ speaker: lastSpeaker, text: currentTurn.join(' ') });
           lastSpeaker = word.speaker;
