@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import type { InterviewSession } from "../../generated/prisma/index";
 import type { DiarizationWord } from "../../lib/transcription";
+import { signOut } from "next-auth/react";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -181,6 +182,16 @@ export default function DashboardClient() {
 
   return (
     <div className="w-full max-w-2xl mx-auto mt-10">
+      {/* Dashboard Header with Logout */}
+      <div className="w-full flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-white">Your Dashboard</h1>
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="px-6 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-red-600 font-semibold shadow-lg hover:from-pink-600 hover:to-red-700 transition-colors text-white text-base"
+        >
+          Logout
+        </button>
+      </div>
       <form onSubmit={handleUpload} className="flex flex-col gap-4 mb-8 bg-gray-900/60 p-6 rounded-xl shadow">
         <label className="font-semibold">Upload Interview Recording</label>
         <input

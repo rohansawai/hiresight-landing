@@ -44,7 +44,7 @@ export default function Home() {
             {isLoggedIn && (
               <Link
                 href="/dashboard"
-                className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-base font-semibold transition-colors"
+                className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors text-white text-base"
               >
                 Dashboard
               </Link>
@@ -73,7 +73,7 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center w-full">
         <div className="w-full max-w-5xl bg-gray-900/80 rounded-2xl shadow-xl p-8 flex flex-col gap-8 border border-gray-800 mx-auto my-8 flex-1 justify-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-2 flex items-center justify-center gap-2">
-            <span role="img" aria-label="fire">🔥</span> AI Powered Interview Assistant for Founders
+            AI Powered Hiring Assistant for Early Stage Founders
           </h1>
 
           {/* Early Access Form */}
@@ -105,9 +105,8 @@ export default function Home() {
 
           {/* Marketing copy */}
           <p className="text-lg text-center text-gray-300 max-w-3xl mx-auto">
-            Let <span className="font-bold text-blue-400">HireSight</span> handle the interviews so you can focus on building.
-            Founders and hiring managers are busy — that's why we built an AI co-pilot that manages the interviewing workload:
-            analyzing conversations, suggesting smart follow-up questions during the call, and delivering a clear, actionable hiring report by the time you hang up.
+            Let <span className="font-bold text-blue-400">HireSight</span> handle the interviews so you can focus on building. We built an AI co-pilot that manages the interviewing workload:
+            <span className="font-bold text-blue-400"> analyzing conversations, suggesting follow-up questions during the call, and delivering a clear, actionable hiring report by the time you hang up.</span>
           </p>
 
           <div className="border-t border-gray-700 my-2" />
@@ -119,7 +118,7 @@ export default function Home() {
             </h2>
             <ul className="list-disc list-inside text-gray-300 space-y-1 pl-2 text-left">
               <li> Upload recordings of your interviews.</li>
-              <li> Our AI listens carefully, assigning speaker roles automatically.</li>
+              <li> Our AI listens carefully, transcribing and assigning speaker roles automatically.</li>
               <li> Identifies key skills, strengths, and potential red flags.</li>
             </ul>
           </section>
@@ -134,18 +133,6 @@ export default function Home() {
               <li> Actionable hiring reports generated before you're back at your desk.</li>
               <li> Summaries of what candidates said and how they performed.</li>
               <li> Structured decision feedback to streamline your hiring process.</li>
-            </ul>
-          </section>
-
-          <div className="border-t border-gray-700 my-2" />
-
-          <section>
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
-              <span role="img" aria-label="lock">🔒</span> Secure & Private
-            </h2>
-            <ul className="list-disc list-inside text-gray-300 space-y-1 pl-2 text-left">
-              <li> All files are stored securely in private storage (Supabase).</li>
-              <li> Downloads use signed URLs for maximum privacy.</li>
             </ul>
           </section>
 
