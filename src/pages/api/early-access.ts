@@ -30,10 +30,7 @@ export default async function handler(
     return res.status(200).json({ success: true });
   } catch (error: unknown) {
     // 👇 Type-safely check if it's a Prisma error
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (error && typeof error === 'object' && 'code' in error && (error as any).code === "P2002") {
       return res
         .status(200)
         .json({ success: true, message: "Already registered" });
